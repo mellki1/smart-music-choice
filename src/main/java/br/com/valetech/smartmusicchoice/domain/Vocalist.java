@@ -1,15 +1,29 @@
 package br.com.valetech.smartmusicchoice.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+import javax.persistence.GeneratedValue;
+import java.util.UUID;
+
 public class Vocalist {
-    private String id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    private UUID id;
     private String name;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

@@ -4,6 +4,7 @@ import br.com.valetech.smartmusicchoice.domain.Vocalist;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class VocalistDynamoConfiguration extends DynamoDbTemplate<Vocalist> {
 
@@ -16,8 +17,16 @@ public class VocalistDynamoConfiguration extends DynamoDbTemplate<Vocalist> {
     }
 
     @Override
-    protected Map<String, AttributeValue> getDomainPutItems(Map<String, AttributeValue> domainPutItem, Vocalist vocalist) {
-        domainPutItem.put(VOCALIST_COLUMNS[0], AttributeValue.builder().s(vocalist.getId()).build());
+    public Vocalist getDomainObject(Map<String, AttributeValue> item) {
+        Vocalist vocalist = new Vocalist();
+        vocalist.setId(UUID.fromString(item.get(VOCALIST_COLUMNS[0]).s()));
+        vocalist.setName(item.get(VOCALIST_COLUMNS[1]).s());
+        return vocalist;
+    }
+
+    @Override
+    public Map<String, AttributeValue> getDomainPutItems(Map<String, AttributeValue> domainPutItem, Vocalist vocalist) {
+        domainPutItem.put(VOCALIST_COLUMNS[0], AttributeValue.builder().s(vocalist.getId().toString()).build());
         domainPutItem.put(VOCALIST_COLUMNS[1], AttributeValue.builder().s(vocalist.getName()).build());
         return domainPutItem;
     }

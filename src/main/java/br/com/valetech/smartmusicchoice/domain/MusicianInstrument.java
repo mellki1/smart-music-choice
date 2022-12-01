@@ -1,15 +1,24 @@
 package br.com.valetech.smartmusicchoice.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.UUID;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class MusicianInstrument {
-    private String musicianId;
-    private String instrumentId;
+    private UUID musicianId;
+    private UUID instrumentId;
+
+    public UUID getMusicianId() {
+        return musicianId;
+    }
+
+    public void setMusicianId(UUID musicianId) {
+        this.musicianId = musicianId;
+    }
+
+    public UUID getInstrumentId() {
+        return instrumentId;
+    }
+
+    public void setInstrumentId(UUID instrumentId) {
+        this.instrumentId = instrumentId;
+    }
 }

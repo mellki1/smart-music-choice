@@ -9,28 +9,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class DynamoDbTemplate<T> {
-
-    private static final int PARTITION_KEY_INDEX_COLUMN = 0;
-    private static final int SORT_KEY_INDEX_COLUMN = 0;
-    private final String partitionKey;
-    private final String sortKey;
     private final String[] tableColumns;
 
     protected DynamoDbTemplate(String... tableColumns) {
-        this.partitionKey = tableColumns[PARTITION_KEY_INDEX_COLUMN];
-        this.sortKey = tableColumns[SORT_KEY_INDEX_COLUMN];
         this.tableColumns = tableColumns;
     }
 
     public abstract String getTableName();
-    protected abstract Map<String, AttributeValue> getDomainPutItems(Map<String, AttributeValue> domainPutItem, T domain);
 
-    protected ScanRequest scanRequest() {
+    public abstract T getDomainObject(Map<String, AttributeValue> item);
+
+    public ScanRequest scanRequest() {
         return ScanRequest.builder().tableName(getTableName())
-                .attributesToGet(partitionKey, sortKey).build();
+                .attributesToGet(tableColumns).build();
     }
 
-    protected PutItemRequest putRequest(T domain) {
+    public abstract Map<String, AttributeValue> getDomainPutItems(Map<String, AttributeValue> domainPutItem, T domain);
+
+    public PutItemRequest putRequest(T domain) {
         Map<String, AttributeValue> domainPutItem = new HashMap<>();
         Map<String, AttributeValue> item = getDomainPutItems(domainPutItem, domain);
 
@@ -40,13 +36,21 @@ public abstract class DynamoDbTemplate<T> {
                 .build();
     }
 
-    protected GetItemRequest getRequest(String name) {
+    public GetItemRequest getRequest(T domain) {
         Map<String, AttributeValue> key = new HashMap<>();
-        key.put(partitionKey, AttributeValue.builder().s(name).build());
+        key = getDomainPutItems(key, domain);
         return GetItemRequest.builder()
                 .tableName(getTableName())
                 .key(key)
                 .attributesToGet(tableColumns)
                 .build();
+    }
+
+    public T from(Map<String, AttributeValue> item) {
+        T domain = null;
+        if (item != null && !item.isEmpty()) {
+            domain = getDomainObject(item);
+        }
+        return domain == null ? (T) new Object() : domain;
     }
 }
